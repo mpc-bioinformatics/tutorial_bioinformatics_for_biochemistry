@@ -1,3 +1,105 @@
+
+install.packages("pak")
+pak::pak("mpc-bioinformatics/ProtStatsWF@introduce_SE")
+pak::pak("ggVennDiagram")
+
+### Loading the package
+library(ProtStatsWF)
+library(SummarizedExperiment)
+library(ggVennDiagram)
+library(ggplot2)
+library(ComplexHeatmap)
+
+### TODO: hier erstmal Daten/Ergebnisse vom letzten Mal reinladen
+
+
+#### Exercise 3
+
+## A) Have a look at the t-test results from the last session.
+
+### Answer the following questions:
+### How many proteins are significant (p <= 0.05)?
+sum(ttest_result$p <= 0.05, na.rm = TRUE)
+# [1] 1153
+
+### How many proteins are significant after FDR-correction (column p.fdr)?
+sum(ttest_result$p.fdr <= 0.05, na.rm = TRUE)
+# [1] 954
+
+### How many proteins are significant after FDR-correction and have a
+### fold change > 2 or < 1/2?
+sum(ttest_result$p.fdr <= 0.05 & (ttest_result$FC_HCC_divided_by_C >= 2 | ttest_result$FC_HCC_divided_by_C  <= 1/2), na.rm = TRUE)
+# [1] 471
+
+
+#### TODO: hier Volcano, der auch FDR corrected p-values einfärbt
+
+
+
+### B) As an alternative, we can calculate the limma test now. To be directly
+### comparable with the t-test results, we only want to calculate it for
+### proteins with a valid p-value for the t-test:
+D_limma <- D[!is.na(ttest_result$p), ]
+
+
+### load the limma package and perform the limma test.
+library(limma)
+
+### Apply the limma test. To mimick the paired t-test, add the sample variable
+## as a blocking factor in the design matrix (~ group + sample).
+
+design <- model.matrix(~ group + sample)
+fit  <- lmFit(D_limma, design)
+efit <- eBayes(fit)
+
+limma_result <- topTable(efit, coef = "groupHCC", number = Inf, sort.by = "none")
+
+
+### C) Create a Volcano Plot using the limma results. Be careful, as the
+### limma result has different column names and the fold change columns is
+### already log-transformed! Use the VolcanoPlot_ttest() function again and
+### set the settings accordingly.
+
+VolcanoPlot_ttest(RES = limma_result,
+                  columnNameP = "P.Value",
+                  columnNamePadj = "adj.P.Val",
+                  columnNameFC = "logFC",
+                  isFCLog  = TRUE)
+
+
+### D) Compare the results (Volcano plot, number of significant proteins, histogram
+### of p-values).
+
+sum(limma_result$P.Value <= 0.05, na.rm = TRUE) # [1] 1178
+sum(limma_result$adj.P.Val <= 0.05, na.rm = TRUE) # [1] 992
+sum(limma_result$adj.P.Val <= 0.05 & (limma_result$logFC >= 1 | limma_result$logFC  <= -1), na.rm = TRUE) # [1] 603
+
+par(mfrow = c(2,2))
+hist(ttest_result$p, 20, ylim = c(0, 1300))
+hist(ttest_result$p.fdr, 20, ylim = c(0, 1300))
+hist(limma_result$P.Value, 20, ylim = c(0, 1300))
+hist(limma_result$adj.P.Val, 20, ylim = c(0, 1300))
+par(mfrow = c(1,1))
+
+
+### E) (optional) Use the ggVennDiagram package to visualize the overlap of
+### significant proteins between the t-test and limma results.
+### Have alook at this website for further information and example code
+### for the ggVennDiagram package: https://gaospecial.github.io/ggVennDiagram/
+## and the help page of the ggVennDiagram() function.
+
+
+
+ind_ttest <- which(ttest_result$p.fdr <= 0.05 & (ttest_result$FC_HCC_divided_by_C >= 2 | ttest_result$FC_HCC_divided_by_C  <= 1/2))
+ind_limma <- which(limma_result$adj.P.Val <= 0.05 & (limma_result$logFC >= 1 | limma_result$logFC  <= -1))
+X <- list(
+    ttest = rownames(ttest_result)[ind_ttest],
+    limma = rownames(limma_result)[ind_limma]
+)
+ggVennDiagram(X) + scale_fill_gradient(low="grey90",high = "red")
+
+
+
 #### Exercise 2
 
 
@@ -14,7 +116,7 @@ D_HM <- D_limma[ind_limma, ]
 
 ### B) Generate a basic heatmap by using the function Heatmap() from the ComplexHeatmap package.
 
-library(ComplexHeatmap)
+
 Heatmap(D_HM)
 
 ### C) You will see, that you cannot see differences between the samples in the heatmap well,
@@ -39,9 +141,9 @@ Heatmap(D_HM_scaled,
         clustering_distance_rows = "pearson",
         clustering_distance_columns = "pearson")
 
-Heatmap(D_HM,
-        clustering_distance_rows = "pearson",
-        clustering_distance_columns = "pearson")
+# Heatmap(D_HM,
+#         clustering_distance_rows = "pearson",
+#         clustering_distance_columns = "pearson")
 
 
 ### E) The ComplexHeatmap R package allows heatmap annotations.
@@ -88,3 +190,4 @@ Heatmap(D_HM_scaled,
         clustering_distance_rows = "pearson",
         clustering_distance_columns = "pearson",
         top_annotation = HeatmapAnnotation(df = annotation_df2))
+
