@@ -144,9 +144,47 @@ Z$Height[index]
 # - How many samples and patients do we have here and what kind of experimental groups?
 # - How many is the distribution of men and woman? (hint: have a look at the table() function)
 
+D <- read.csv("Data/proteins_HCC.csv")
+D_clinical <- read.csv("Data/clinical_data.csv")
+
+
+nrow(D)
+# [1] 4185  measured proteins
+
+mean(D$Protein.Length)
+# [1] 563.5584 average protein length
+
+# protein with highest intensity in sample C1:
+ind <- which.max(D$C_1)
+D$Protein[ind] # "P68871"
+D$Gene[ind] # [1] "HBB"
+D$Description[ind] # [1] "Hemoglobin subunit beta"
+D$C_1[ind] # [1] 4745288200
+
+# protein with highest average intensity
+ind <- which.max(rowMeans(D[, 6:43]))
+D$Protein[ind] # [1] "P31327"
+D$Gene[ind] # [1] "CPS1"
+D$Description[ind] # [1] "Carbamoyl-phosphate synthase [ammonia], mitochondrial"
+rowMeans(D[ind, 6:43]) # [1] 2522161130
+
+# non-human proteins
+table(D$Organism)
+# Bos taurus Homo sapiens   Sus scrofa
+#          3         4181            1
+# -> these are contaminants from lab reagents
 
 
 
+# samples, patients, experimental groups
+# 18 patients, 2 samples from each patient, 1 HCC and one C
+
+
+# men vs woman
+table(D_clinical$Gender)
+# Female   Male
+# 12     26
+### ! These are samples, not patients! So we have 6 women and 13 men in the study
 
 
 

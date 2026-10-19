@@ -1,6 +1,6 @@
 
-install.packages("pak")
-pak::pak("mpc-bioinformatics/ProtStatsWF@introduce_SE")
+#install.packages("pak")
+#pak::pak("mpc-bioinformatics/ProtStatsWF@0.3.1")
 pak::pak("ggVennDiagram")
 
 ### Loading the package
@@ -9,9 +9,17 @@ library(SummarizedExperiment)
 library(ggVennDiagram)
 library(ggplot2)
 library(ComplexHeatmap)
+library(limma)
 
-### TODO: hier erstmal Daten/Ergebnisse vom letzten Mal reinladen
+################################################################################
+## load data from last time
 
+D_loess <- readRDS("intermediate_results/D_loess.rds")
+
+ttest_result <- readRDS("intermediate_results/ttest_result.rds")
+
+
+################################################################################
 
 #### Exercise 3
 
@@ -32,23 +40,21 @@ sum(ttest_result$p.fdr <= 0.05 & (ttest_result$FC_HCC_divided_by_C >= 2 | ttest_
 # [1] 471
 
 
-#### TODO: hier Volcano, der auch FDR corrected p-values einfärbt
-
-
 
 ### B) As an alternative, we can calculate the limma test now. To be directly
 ### comparable with the t-test results, we only want to calculate it for
-### proteins with a valid p-value for the t-test:
+### proteins with a valid p-value for the t-test.
+### Additionally we extract group and patient information from the SE obnject.
+D <- assay(D_loess$SE, "intensity_norm")
 D_limma <- D[!is.na(ttest_result$p), ]
+patient <- colData(D_loess$SE)$PatientID
+group <- colData(D_loess$SE)$Group
 
 
-### load the limma package and perform the limma test.
-library(limma)
+### Apply the limma test. To mimick the paired t-test, add the patient variable
+## as a blocking factor in the design matrix (~ group + patient).
 
-### Apply the limma test. To mimick the paired t-test, add the sample variable
-## as a blocking factor in the design matrix (~ group + sample).
-
-design <- model.matrix(~ group + sample)
+design <- model.matrix(~ group + patient)
 fit  <- lmFit(D_limma, design)
 efit <- eBayes(fit)
 
@@ -70,9 +76,9 @@ VolcanoPlot_ttest(RES = limma_result,
 ### D) Compare the results (Volcano plot, number of significant proteins, histogram
 ### of p-values).
 
-sum(limma_result$P.Value <= 0.05, na.rm = TRUE) # [1] 1178
-sum(limma_result$adj.P.Val <= 0.05, na.rm = TRUE) # [1] 992
-sum(limma_result$adj.P.Val <= 0.05 & (limma_result$logFC >= 1 | limma_result$logFC  <= -1), na.rm = TRUE) # [1] 603
+sum(limma_result$P.Value <= 0.05, na.rm = TRUE) # [1] 1191
+sum(limma_result$adj.P.Val <= 0.05, na.rm = TRUE) # [1] 1012
+sum(limma_result$adj.P.Val <= 0.05 & (limma_result$logFC >= 1 | limma_result$logFC  <= -1), na.rm = TRUE) # [1] 620
 
 par(mfrow = c(2,2))
 hist(ttest_result$p, 20, ylim = c(0, 1300))

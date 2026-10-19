@@ -1,7 +1,7 @@
 ### Installation of packages
 
 install.packages("pak")
-pak::pak("mpc-bioinformatics/ProtStatsWF@introduce_SE")
+pak::pak("mpc-bioinformatics/ProtStatsWF@0.3.1")
 
 setwd("tutorial_bioinformatics_for_biochemistry")
 
@@ -23,6 +23,8 @@ library(SummarizedExperiment)
 ### Have a look at the help page with "?prepareData" and set the settings so
 ### that the data is log-transformed, Zeros are transformed into missing values
 ### and the data is not further normalized.
+### The saveRDS function then saves the normalized data as ad rds object
+### which can be loaded later.
 
 # D_nonorm <- prepareData(dataPath = "Data/proteins_HCC.csv", # you may need to change the path here
 #                         intensityColumns = 6:43,
@@ -30,6 +32,7 @@ library(SummarizedExperiment)
 #                         sampleNameColumn = "Sample",
 #                         # add further arguments here for log-transformation etc
 #                         )
+# saveRDS(D_nonorm, file = "") ## set filepath and name to save the data
 
 D_nonorm <- prepareData(dataPath = "Data/proteins_HCC.csv",
                           intensityColumns = 6:43,
@@ -39,6 +42,8 @@ D_nonorm <- prepareData(dataPath = "Data/proteins_HCC.csv",
                           normMethod = "nonorm",
                           zeroToNA = TRUE
 )
+
+saveRDS(D_nonorm, file = "intermediate_results/D_nonorm.rds")
 
 
 ### B) Apply the function workflow_QC on the resulting object. Look at the
@@ -55,7 +60,7 @@ workflow_QC(D = D_nonorm,
             suffix = "_nonorm")
 
 ### C) Import and prepare the data 3 further times, choosing median, quantile
-### and loess as normalization methods.
+### and loess as normalization methods. Do not forget to save the data as rds files.
 ### Again, apply the workflow_QC.
 ### Important: make sure that you set different suffixes using the "suffix"
 ### setting or safe the results in different folders to avoid your previous results
@@ -72,6 +77,8 @@ D_median <- prepareData(dataPath = "Data/proteins_HCC.csv",
                         zeroToNA = TRUE
 )
 
+saveRDS(D_median, file = "intermediate_results/D_median.rds")
+
 D_quantile <- prepareData(dataPath = "Data/proteins_HCC.csv",
                           intensityColumns = 6:43,
                           sampleInfoPath = "Data/clinical_data.csv",
@@ -81,6 +88,8 @@ D_quantile <- prepareData(dataPath = "Data/proteins_HCC.csv",
                           zeroToNA = TRUE
 )
 
+saveRDS(D_quantile, file = "intermediate_results/D_quantile.rds")
+
 D_loess <- prepareData(dataPath = "Data/proteins_HCC.csv",
                         intensityColumns = 6:43,
                         sampleInfoPath = "Data/clinical_data.csv",
@@ -89,6 +98,8 @@ D_loess <- prepareData(dataPath = "Data/proteins_HCC.csv",
                         normMethod = "loess",
                         zeroToNA = TRUE
 )
+
+saveRDS(D_loess, file = "intermediate_results/D_loess.rds")
 
 
 workflow_QC(D = D_median,
@@ -141,6 +152,7 @@ PCA_Plot(SE = D_loess$SE,
 ### as the data was already log-transformed before normalization. However, the
 ### fold changes should be calculated on the back-transformed data (original data
 ### scale). So set the settings for logBeforeTest and delogForFC accordingly.
+### Save the t-test results in an rds file so we can re-use it next time!
 
 ttest_result <- ttest(SE = D_loess$SE, assay = "intensity_norm",
                       groupColumn = "Group",
@@ -148,16 +160,17 @@ ttest_result <- ttest(SE = D_loess$SE, assay = "intensity_norm",
                       paired = TRUE, varEqual = FALSE,
                       logBeforeTest = FALSE, delogForFC = TRUE, logBase = 2,
                       minObs = 5)
+saveRDS(ttest_result, file = "intermediate_results/ttest_result.rds")
 
 
 ### B) Draw a Volcano plot and mark the proteins with a significant p-value after
 ### FDR-correction in a different colour. For this, use the VolcanoPlot_ttest()
 ### function from the ProtStatsWF package. A look at the help page of this function
 ### will be helpful.
+### Choose "p.fdr" as columnNamePadj. We will learn next time what it means.
 
 VolcanoPlot_ttest(RES = ttest_result,
                   columnNameP = "p",
                   columnNamePadj = "p.fdr",
                   columnNameFC = "FC_HCC_divided_by_C")
 
-#### TODO: hier erstmal adjustierte p-Werte nicht einfärben
