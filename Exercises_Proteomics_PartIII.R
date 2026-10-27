@@ -11,6 +11,8 @@ library(ggplot2)
 library(ComplexHeatmap)
 library(limma)
 
+setwd("partIII")
+
 ################################################################################
 ## load data from last time
 
@@ -41,14 +43,14 @@ ttest_result <- readRDS("intermediate_results/ttest_result.rds")
 ### B) As an alternative, we can calculate the limma test now. To be directly
 ### comparable with the t-test results, we only want to calculate it for
 ### proteins with a valid p-value for the t-test.
-### Additionally we extract group and patient information from the SE obnject.
+### Additionally we extract group and patient information from the SE object.
 D <- assay(D_loess$SE, "intensity_norm")
 D_limma <- D[!is.na(ttest_result$p), ]
 patient <- colData(D_loess$SE)$PatientID
 group <- colData(D_loess$SE)$Group
 
 
-### Apply the limma test. To mimick the paired t-test, add the patient variable
+### Apply the limma test. To mimic the paired t-test, add the patient variable
 ## as a blocking factor in the design matrix (~ group + patient).
 
 

@@ -2,8 +2,9 @@
 
 install.packages("pak")
 pak::pak("mpc-bioinformatics/ProtStatsWF@0.3.1")
+pak::pak("affy")
 
-setwd("tutorial_bioinformatics_for_biochemistry")
+setwd("partII")
 
 
 ################################################################################
@@ -23,7 +24,7 @@ library(SummarizedExperiment)
 ### Have a look at the help page with "?prepareData" and set the settings so
 ### that the data is log-transformed, Zeros are transformed into missing values
 ### and the data is not further normalized.
-### The saveRDS function then saves the normalized data as ad rds object
+### The saveRDS function then saves the normalized data as an rds object
 ### which can be loaded later.
 
 D_nonorm <- prepareData(dataPath = "Data/proteins_HCC.csv", # you may need to change the path here
@@ -60,7 +61,7 @@ workflow_QC(D = D_nonorm,
 ### try out different versions by setting colour and shape to different columns
 ### of the clinical data. Have a look at the help page of the PCA_Plot() function
 ### to see which settings you can use.
-
+### Hint: you can extract the SE object (SummarizedExperiment) via D_loess$SE.
 
 
 
@@ -71,9 +72,10 @@ workflow_QC(D = D_nonorm,
 
 ### A) Apply a paired (!) t-test to compare HCC versus Control group.
 ### Here we extract the data and variables we need to perform the t-test from
-### the SummarizedExperiment object that prepareDataSE() function generates.
+### the SummarizedExperiment object that prepareData() function generates.
 ### In this example here, the loess-normalized data is used but you can use
 ### another one if you like!
+### Hint: you can extract the SE object (SummarizedExperiment) via D_loess$SE.
 
 ### Have a look at the help page of the ttest() function and
 ### apply the t-test to the data. Make sure to set the settings for a paired

@@ -61,7 +61,7 @@ x^y
 
 ## Exercise 3: Vectors
 
-## A) Create a vector x containing the numbers 5, $2$, $4$, $6$ and $43$.
+## A) Create a vector x containing the numbers 5, 2, 4, 6 and 43.
 
 x <- c(5, 2, 4, 6, 43)
 
@@ -143,6 +143,8 @@ Z$Height[index]
 
 # - How many samples and patients do we have here and what kind of experimental groups?
 # - How many is the distribution of men and woman? (hint: have a look at the table() function)
+
+setwd("partI")
 
 D <- read.csv("Data/proteins_HCC.csv")
 D_clinical <- read.csv("Data/clinical_data.csv")
