@@ -24,7 +24,7 @@ library(SummarizedExperiment)
 ### Have a look at the help page with "?prepareData" and set the settings so
 ### that the data is log-transformed, Zeros are transformed into missing values
 ### and the data is not further normalized.
-### The saveRDS function then saves the normalized data as ad rds object
+### The saveRDS function then saves the normalized data as an rds object
 ### which can be loaded later.
 
 D_nonorm <- prepareData(dataPath = "Data/proteins_HCC.csv", # you may need to change the path here

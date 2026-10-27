@@ -53,7 +53,7 @@ patient <- colData(D_loess$SE)$PatientID
 group <- colData(D_loess$SE)$Group
 
 
-### Apply the limma test. To mimick the paired t-test, add the patient variable
+### Apply the limma test. To mimic the paired t-test, add the patient variable
 ## as a blocking factor in the design matrix (~ group + patient).
 
 design <- model.matrix(~ group + patient)
