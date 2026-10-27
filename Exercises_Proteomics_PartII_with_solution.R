@@ -3,7 +3,7 @@
 install.packages("pak")
 pak::pak("mpc-bioinformatics/ProtStatsWF@0.3.1")
 
-setwd("tutorial_bioinformatics_for_biochemistry")
+setwd("partII")
 
 
 ################################################################################
