@@ -42,10 +42,10 @@
 
 ## Exercise 3: Vectors
 
-## A) Create a vector x containing the numbers 5, $2$, $4$, $6$ and $43$.
+## A) Create a vector x containing the numbers 5, 2, 4, 6 and 43.
 
 
-## B) Set the third element of $x$ to $10$.
+## B) Set the third element of x to 10.
 
 
 ## C) Replace the last element of the vector by its negative value and print the
@@ -108,7 +108,7 @@
 # - How many is the distribution of men and woman? (hint: have a look at the table() function)
 
 
-
+setwd("partI")
 
 
 
