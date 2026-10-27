@@ -4,7 +4,7 @@ install.packages("pak")
 pak::pak("mpc-bioinformatics/ProtStatsWF@0.3.1")
 pak::pak("affy")
 
-setwd("partII")
+setwd("solution")
 
 
 ################################################################################

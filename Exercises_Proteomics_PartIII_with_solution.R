@@ -11,7 +11,7 @@ library(ggplot2)
 library(ComplexHeatmap)
 library(limma)
 
-setwd("partIII")
+setwd("solution")
 
 ################################################################################
 ## load data from last time

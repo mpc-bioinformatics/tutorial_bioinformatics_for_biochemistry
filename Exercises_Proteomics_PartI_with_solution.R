@@ -144,7 +144,7 @@ Z$Height[index]
 # - How many samples and patients do we have here and what kind of experimental groups?
 # - How many is the distribution of men and woman? (hint: have a look at the table() function)
 
-setwd("partI")
+setwd("solution")
 
 D <- read.csv("Data/proteins_HCC.csv")
 D_clinical <- read.csv("Data/clinical_data.csv")
