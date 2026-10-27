@@ -11,6 +11,8 @@ library(ggplot2)
 library(ComplexHeatmap)
 library(limma)
 
+setwd("partIII")
+
 ################################################################################
 ## load data from last time
 
@@ -44,7 +46,7 @@ sum(ttest_result$p.fdr <= 0.05 & (ttest_result$FC_HCC_divided_by_C >= 2 | ttest_
 ### B) As an alternative, we can calculate the limma test now. To be directly
 ### comparable with the t-test results, we only want to calculate it for
 ### proteins with a valid p-value for the t-test.
-### Additionally we extract group and patient information from the SE obnject.
+### Additionally we extract group and patient information from the SE object.
 D <- assay(D_loess$SE, "intensity_norm")
 D_limma <- D[!is.na(ttest_result$p), ]
 patient <- colData(D_loess$SE)$PatientID
